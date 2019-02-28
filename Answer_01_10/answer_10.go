@@ -13,14 +13,15 @@ func getMedianPixVal(pixArray []float64) float64 {
 	sort.Slice(pixArray, func(i, j int) bool {
 		return pixArray[i] < pixArray[j]
 	})
-
+	medianValue := 0.0
 	if len(pixArray)%2 == 0 {
 		leftValue := pixArray[len(pixArray)/2]
 		rightValue := pixArray[len(pixArray)/2+1]
-		return (leftValue + rightValue) / 2
+		medianValue = (leftValue + rightValue) / 2
 	} else {
-		return pixArray[len(pixArray)/2]
+		medianValue = pixArray[len(pixArray)/2]
 	}
+	return medianValue
 }
 
 func main() {
