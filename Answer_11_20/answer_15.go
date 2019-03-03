@@ -38,11 +38,6 @@ func main() {
 		}
 	}
 
-	for y := 0; y < grayimg.Bounds().Size().Y; y++ {
-		for x := 0; x < grayimg.Bounds().Size().X; x++ {
-		}
-	}
-
 	// 縦方向Sobelフィルタを作成
 	sobelFilterV := [3][3]int{
 		{1, 0, -1},

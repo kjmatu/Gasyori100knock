@@ -38,11 +38,6 @@ func main() {
 		}
 	}
 
-	for y := 0; y < grayimg.Bounds().Size().Y; y++ {
-		for x := 0; x < grayimg.Bounds().Size().X; x++ {
-		}
-	}
-
 	// 縦方向Prewittフィルタを作成
 	prewittFilterV := [3][3]int{
 		{-1, -1, -1},
@@ -84,7 +79,6 @@ func main() {
 				}
 			}
 
-			// fmt.Printf("%04d ", prewittV)
 			if prewittV < 0 {
 				prewittV = 0
 			}
