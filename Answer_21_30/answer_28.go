@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-func move(affineMatrix [3][3]int, x, y int) (moveX, moveY int) {
+func affineScaleMoveImg(affineMatrix [3][3]int, x, y int) (moveX, moveY int) {
 	moveArray := [3]int{}
 	for i, rowArray := range affineMatrix {
 		// fmt.Printf("[%d]%d\n", i, rowArray)
@@ -38,7 +38,7 @@ func main() {
 
 	for height := 0; height < translationImg.Bounds().Size().Y; height++ {
 		for width := 0; width < translationImg.Bounds().Size().X; width++ {
-			x, y := move(affineTranslationMatrix, width, height)
+			x, y := affineScaleMoveImg(affineTranslationMatrix, width, height)
 			translationImg.Set(x, y, jimg.At(width, height))
 		}
 	}
