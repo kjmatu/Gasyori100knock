@@ -14,6 +14,7 @@ English is here  >> https://github.com/KuKuXia/Image_Processing_100_Questions Ku
 **ディープラーニングのノックはこっち** >> https://github.com/yoyoyo-yo/DeepLearningMugenKnock
 
 ## Recent
+- 2019.3.7 TutorialにC++用を加えた　そろそろC++用の答えもつくろっかなーと
 - 2019.3.5 各Questionの答えをanswersディレクトリに収納
 - 2019.3.3 Q.18-22. 一部修正
 - 2019.2.26 Q.10. メディアンフィルタの解答を一部修正
@@ -91,6 +92,10 @@ https://qiita.com/karaage0703/items/e0b57b63dbebed908b2f
 
 あとは問題を解いていってください。それぞれのフォルダに問題内容が入っています。問題では assets/imori.jpg を使用して下さい。各フォルダのREADME.mdに問題、解答プログラムがあります。```python answers/answer_@@.py```　とすると解答が出ます。
 
+## C++用OpenCVのインストール
+
+C++用のopencvのインストール方法 >> https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial/README_opencv_c_install.md
+
 ## 問題
 
 詳細な問題内容は各ディレクトリのREADMEにあります。（ディレクトリで下にスクロールすればあります）
@@ -99,9 +104,10 @@ https://qiita.com/karaage0703/items/e0b57b63dbebed908b2f
 
 ### [チュートリアル](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial)
 
-| | 内容 |
-|:---:|:---:|
-|1| [画像読み込み・表示](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA) |
+
+| | 内容 | | | 内容 |
+|:---:|:---:|:---:|:---:|:---:|
+|1| [画像読み込み・表示](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA) | | 6 | [C++でのOpenCVの使い方](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial/README_opencv_c_install.md) |
 |2| [画素をいじる](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) |
 |3| [画像のコピー](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC) |
 |4| [画像の保存](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E4%BF%9D%E5%AD%98) |
