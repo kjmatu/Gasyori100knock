@@ -10,11 +10,14 @@ English is here  >> https://github.com/KuKuXia/Image_Processing_100_Questions Ku
 - **内容はいろいろな文献を調べて載っけてるので正しくないものもあるかもしれないので注意して下さい** まちがいがあったらプルリクもらえるととても助かります！！
 - 【注意】このページを利用して、または関して生じた事に関しては、私は一切責任を負いません。すべて**自己責任**でお願い致します。
 
+PythonとC++の好きな方でやってみてね
 
-**ディープラーニングのノックはこっち** >> https://github.com/yoyoyo-yo/DeepLearningMugenKnock
+**ディープラーニングのノックはこっち** 
+>> [ディープラーニング∞本ノック!!](https://github.com/yoyoyo-yo/DeepLearningMugenKnock)
 
 ## Recent
-- 2019.3.7 TutorialにC++用を加えた　そろそろC++用の答えもつくろっかなーと
+- 2019.3.8 Questions_01_10 にC++の解答を追加！
+- 2019.3.7 TutorialにC++用を追加　そろそろC++用の答えもつくろっかなーと
 - 2019.3.5 各Questionの答えをanswersディレクトリに収納
 - 2019.3.3 Q.18-22. 一部修正
 - 2019.2.26 Q.10. メディアンフィルタの解答を一部修正
@@ -22,79 +25,28 @@ English is here  >> https://github.com/KuKuXia/Image_Processing_100_Questions Ku
 - 2019.2.23 Q.6. 減色処理のREADMEを修正
 - 2019.1.29 HSVを修正
 
-## 環境設定
+## まずは
 
-Python-3.6でやって下さい。(解答はPython-3.6で用意してます)
-
-### 1. Minicondaのインストール
-
-https://conda.io/miniconda.html のサイトからMinicondaをインストールします。これはWindowでもMacOSでも可能です。Minicondaがインストールできたら、端末(Windowでは端末、MacOSではターミナル)を開き、以下コマンドで仮想環境を作成します。
-
-```bash
-$ conda create python=3.6 -n gasyori100
-```
-
-作成できたら、以下コマンドで仮想環境を動作します。
-
-```bash
-$ source activate gasyori100
-```
-
-するとこうなります。
-
-```bash
-(gasyori100) :~/work_space/Gasyori100knock/ :$ 
-```
-
-### 2. gitのインストール
-
-gitをインストールします。そして、端末を開いて、以下のコマンドを実行します。このコマンドでこのディレクトリを丸ごと自分のパソコンにコピーできます。
+gitをインストールします。そして、端末を開いて、このコマンドを実行します。このコマンドでこのディレクトリを丸ごと自分のパソコンにコピーできます。
 
 ```bash
 $ git clone https://github.com/yoyoyo-yo/Gasyori100knock.git
 ```
 
-### 3. パッケージのインストール
+そしたら、PythonかC++のやりたい方を選んで「**チュートリアル**」に進みましょう！
 
-以下のコマンドで必要なパッケージをインストールします。
+## [チュートリアル](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial)
 
-
-```bash
-$ pip install -r requirement.txt
-```
-
-### 4. 画像処理チュートリアル
-
-以下のファイルを作成し sample.py という名前で保存し、実行します。
-
-```python
-import cv2
-
-img = cv2.imread("assets/imori.jpg")
-cv2.imshow("imori", img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-```
-
-```bash
-$ python sample.py
-```
-
-これで以下の画像が表示されれば成功です！
-何かボタンを押せば消えます。
-
-![](assets/sample.png)
-
-もし上記の設定ができなかったという人はこちらが参考になると思います。
-https://qiita.com/karaage0703/items/e0b57b63dbebed908b2f
-
-次に画像処理に関するnumpyの扱い方のために**Tutorial**フォルダを見てみて下さい。（もう知ってるという人はスキップして下さい。）
+| | 内容 | Python | C++ |
+|:---:|:---:|:---:|:---:|
+| 1 | インストール |  [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md) |
+| 2 | 画像読み込み・表示 | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF)
+| 3 | 画素をいじる| [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) 
+| 4 | 画像のコピー | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E5%83%8F%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC) 
+| 5 | 画像の保存 | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E4%BF%9D%E5%AD%98) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%94%BB%E5%83%8F%E3%81%AE%E4%BF%9D%E5%AD%98) |
+| 6 | 練習問題 | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%B7%B4%E7%BF%92)| [✓](https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README_opencv_c_install.md#%E7%B7%B4%E7%BF%92%E5%95%8F%E9%A1%8C)
 
 あとは問題を解いていってください。それぞれのフォルダに問題内容が入っています。問題では assets/imori.jpg を使用して下さい。各フォルダのREADME.mdに問題、解答プログラムがあります。```python answers/answer_@@.py```　とすると解答が出ます。
-
-## C++用OpenCVのインストール
-
-C++用のopencvのインストール方法 >> https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial/README_opencv_c_install.md
 
 ## 問題
 
@@ -102,26 +54,15 @@ C++用のopencvのインストール方法 >> https://github.com/yoyoyo-yo/Gasyo
 - 解答は簡易化のため、main()などは使用しません。
 - numpy中心ですが、numpyの基本知識は自分で調べて下さい。
 
-### [チュートリアル](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial)
-
-
-| | 内容 | | | 内容 |
-|:---:|:---:|:---:|:---:|:---:|
-|1| [画像読み込み・表示](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E8%AA%AD%E3%81%BF%E8%BE%BC%E3%81%BF%E8%A1%A8%E7%A4%BA) | | 6 | [C++でのOpenCVの使い方](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial/README_opencv_c_install.md) |
-|2| [画素をいじる](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E7%B4%A0%E3%82%92%E3%81%84%E3%81%98%E3%82%8B) |
-|3| [画像のコピー](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC) |
-|4| [画像の保存](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%94%BB%E5%83%8F%E3%81%AE%E4%BF%9D%E5%AD%98) |
-|5| [練習問題](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Tutorial#%E7%B7%B4%E7%BF%92)|
-
 ### [問題1 - 10](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10)
 
-|番号|問題||番号|問題|
-|:---:|:---:|:---:|:---:|:---:|
-|1|[チャネル入れ替え](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q1-%E3%83%81%E3%83%A3%E3%83%8D%E3%83%AB%E5%85%A5%E3%82%8C%E6%9B%BF%E3%81%88)| |6| [減色処理](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q6-%E6%B8%9B%E8%89%B2%E5%87%A6%E7%90%86) | |
-|2|[グレースケール化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q2-%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E5%8C%96) | |7| [平均プーリング](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q7-%E5%B9%B3%E5%9D%87%E3%83%97%E3%83%BC%E3%83%AA%E3%83%B3%E3%82%B0) |
-|3|[二値化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q3-%E4%BA%8C%E5%80%A4%E5%8C%96) | |8| [Maxプーリング](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q8-max%E3%83%97%E3%83%BC%E3%83%AA%E3%83%B3%E3%82%B0) | |
-|4|[大津の二値化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q4-%E5%A4%A7%E6%B4%A5%E3%81%AE%E4%BA%8C%E5%80%A4%E5%8C%96) | |9| [ガウシアンフィルタ](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q9-%E3%82%AC%E3%82%A6%E3%82%B7%E3%82%A2%E3%83%B3%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF) |
-|5|[HSV変換](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q5-hsv%E5%A4%89%E6%8F%9B) | |10| [メディアンフィルタ](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q10-%E3%83%A1%E3%83%87%E3%82%A3%E3%82%A2%E3%83%B3%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF) |
+|番号|問題| Python | C++ | |番号|問題| Python | C++ |
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|1|[チャネル入れ替え](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q1-%E3%83%81%E3%83%A3%E3%83%8D%E3%83%AB%E5%85%A5%E3%82%8C%E6%9B%BF%E3%81%88)| [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_1.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_1.cpp) | |6| [減色処理](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q6-%E6%B8%9B%E8%89%B2%E5%87%A6%E7%90%86) |[✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_6.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_6.cpp) 
+|2|[グレースケール化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q2-%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B9%E3%82%B1%E3%83%BC%E3%83%AB%E5%8C%96) |[✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_2.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_2.cpp) | |7| [平均プーリング](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q7-%E5%B9%B3%E5%9D%87%E3%83%97%E3%83%BC%E3%83%AA%E3%83%B3%E3%82%B0) |[✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_7.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_7.cpp) 
+|3|[二値化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q3-%E4%BA%8C%E5%80%A4%E5%8C%96) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_3.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_3.cpp)  | |8| [Maxプーリング](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q8-max%E3%83%97%E3%83%BC%E3%83%AA%E3%83%B3%E3%82%B0) |[✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_8.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_8.cpp) 
+|4|[大津の二値化](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q4-%E5%A4%A7%E6%B4%A5%E3%81%AE%E4%BA%8C%E5%80%A4%E5%8C%96) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_4.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_4.cpp)  | |9| [ガウシアンフィルタ](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q9-%E3%82%AC%E3%82%A6%E3%82%B7%E3%82%A2%E3%83%B3%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_9.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_9.cpp) 
+|5|[HSV変換](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q5-hsv%E5%A4%89%E6%8F%9B) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_5.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_5.cpp) | |10| [メディアンフィルタ](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10#q10-%E3%83%A1%E3%83%87%E3%82%A3%E3%82%A2%E3%83%B3%E3%83%95%E3%82%A3%E3%83%AB%E3%82%BF) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers/answer_10.py) | [✓](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_01_10/answers_cpp/answer_10.cpp) |
 
 ### [問題11 - 20](https://github.com/yoyoyo-yo/Gasyori100knock/tree/master/Question_11_20)
 

@@ -1,15 +1,18 @@
-# C++のOpenCVのインストール
+# Tutorial -C++-
 
-Pythonでやりたい人はこっち〜〜 >> https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README.md
+## C++のOpenCVのインストール
+
+Pythonでやりたい人はこっち〜〜 
+>> https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/README.md
 
 Ubuntu-16.04(18.04でも可)を想定してます。Dockerを使うと便利だと思います。
 
-## パッケージインストール
+### パッケージインストール
 
 ```bash
 $ apt install build-essential cmake checkinstall libgtk-3-dev libjpeg-dev libpng++-dev wget emacs vim sudo
 ```
-## OpenCVのダウンロード
+### OpenCVのダウンロード
 
 ```bash
 $ mkdir opencv
@@ -23,7 +26,7 @@ $ cmake ..
 $ make -j4
 $ make install
 ```
-## サンプルプログラム
+### サンプルプログラム
 
 以下をsample.cppとして保存
 
@@ -62,8 +65,7 @@ $ ./sample
 
 ![](assets/sample6.png)
 
-
-# チュートリアル
+次に画像処理の基本操作を説明していきます。（もう知ってるという人はスキップして、問題に進んでください！）
 
 ## 画像読み込み
 
@@ -183,12 +185,14 @@ cv::waitKey(0);
 保存する時は、cv::imwrite()メソッドを使います。
 
 ```cpp
-cv::imshow("out.jpg", disp);
+cv::imshow("out.jpg", disp);
 ```
 
 ## 練習問題
 
 画像の左半分上のRとBを入れ替えて表示してみましょう。
+
+![](assets/out_practice.jpg)
 
 回答例
 
@@ -223,3 +227,7 @@ int main(int argc, const char* argv[]){
 ```
 
 答え >> https://github.com/yoyoyo-yo/Gasyori100knock/blob/master/Tutorial/answer.cpp
+
+以上でチュートリアルは終了です。
+
+あとはばんばん問題を解いて下さい！！！！
