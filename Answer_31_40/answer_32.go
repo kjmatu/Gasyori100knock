@@ -19,9 +19,8 @@ func dft(grayImage *image.Gray) [][]complex128 {
 	}
 
 	N := math.Sqrt(float64(W * H))
-	for u, dftRow := range dftResult {
-		for v := range dftRow {
-			// fmt.Printf("[u, v] [%d, %d]\n", u, v)
+	for v, dftRow := range dftResult {
+		for u := range dftRow {
 			var dftVal complex128
 			for y := 0; y < H; y++ {
 				for x := 0; x < W; x++ {
@@ -29,13 +28,10 @@ func dft(grayImage *image.Gray) [][]complex128 {
 					imag := -2 * math.Pi * (float64(u*x)/float64(W) + float64(v*y)/float64(H))
 					exponentVal := complex(0, imag)
 					eulerVal := cmplx.Exp(exponentVal)
-					// fmt.Printf("eulerVal %v\n", eulerVal)
-					// fmt.Println("pixVal", pixVal)
-					// fmt.Println("cross", complex(float64(pixVal), 0)*eulerVal)
 					dftVal += complex(float64(pixVal), 0) * eulerVal
 				}
 			}
-			dftResult[u][v] = dftVal / complex(N, 0)
+			dftResult[v][u] = dftVal / complex(N, 0)
 		}
 	}
 	return dftResult
@@ -54,15 +50,19 @@ func invDft(imageDft [][]complex128) [][]float64 {
 	for y := 0; y < W; y++ {
 		for x := 0; x < H; x++ {
 			var invDftVal complex128
-			for u, dftRow := range imageDft {
-				for v, dftVal := range dftRow {
+			for v, dftRow := range imageDft {
+				for u, dftVal := range dftRow {
 					imag := 2 * math.Pi * (float64(u*x)/float64(W) + float64(v*y)/float64(H))
 					exponentVal := complex(0, imag)
 					eulerVal := cmplx.Exp(exponentVal)
 					invDftVal += dftVal * eulerVal
 				}
 			}
-			invDftResult[y][x] = cmplx.Abs(invDftVal) / N
+			invDftAbs := cmplx.Abs(invDftVal) / N
+			if invDftAbs > 255.0 {
+				invDftAbs = 255.0
+			}
+			invDftResult[y][x] = invDftAbs
 		}
 	}
 	return invDftResult
