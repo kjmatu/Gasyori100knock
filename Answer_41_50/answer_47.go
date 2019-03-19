@@ -92,6 +92,38 @@ func discriminantAnalysisMethod(grayImage *image.Gray) *image.Gray {
 	return binImage
 }
 
+// モルフォロジー処理(膨張)
+func dialation(binImage *image.Gray) *image.Gray {
+	dialationImage := image.NewGray(binImage.Bounds())
+	filter := [3][3]int{
+		{0, 1, 0},
+		{1, 0, 1},
+		{0, 1, 0}}
+	for y := 1; y < binImage.Bounds().Size().Y-1; y++ {
+		for x := 1; x < binImage.Bounds().Size().X-1; x++ {
+			targetPix := binImage.GrayAt(x, y).Y
+			if targetPix == 0 {
+				sum := 0
+				for j, row := range filter {
+					for k, value := range row {
+						sum += int(binImage.GrayAt(x+k-1, y+j-1).Y) * value
+					}
+				}
+
+				if sum >= 255 {
+					dialationImage.Set(x, y, color.Gray{255})
+				} else {
+					dialationImage.Set(x, y, binImage.GrayAt(x, y))
+				}
+			} else {
+				dialationImage.Set(x, y, binImage.GrayAt(x, y))
+			}
+			// fmt.Printf("[%d][%d] %d ", x, y, dialationImage.GrayAt(x, y).Y)
+		}
+	}
+	return dialationImage
+}
+
 func main() {
 	file, err := os.Open("./../assets/imori.jpg")
 	defer file.Close()
@@ -110,55 +142,16 @@ func main() {
 	binImage := discriminantAnalysisMethod(grayImage)
 
 	// モルフォロジー処理(膨張) 1回目
-	dialationImage1 := image.NewGray(binImage.Bounds())
-	filter := [3][3]int{
-		{0, 1, 0},
-		{1, 0, 1},
-		{0, 1, 0}}
-	for y := 1; y < binImage.Bounds().Size().Y-1; y++ {
-		for x := 1; x < binImage.Bounds().Size().X-1; x++ {
-
-			sum := 0
-			for j, row := range filter {
-				for k, value := range row {
-					sum += int(binImage.GrayAt(x+k-1, y+j-1).Y) * value
-				}
-			}
-
-			if sum >= 255 {
-				dialationImage1.Set(x, y, color.Gray{255})
-			} else {
-				dialationImage1.Set(x, y, binImage.GrayAt(x, y))
-			}
-		}
-	}
-
-	// モルフォロジー処理(膨張) 2回目
-	dialationImage2 := image.NewGray(binImage.Bounds())
-	for y := 1; y < dialationImage1.Bounds().Size().Y-1; y++ {
-		for x := 1; x < dialationImage1.Bounds().Size().X-1; x++ {
-
-			sum := 0
-			for j, row := range filter {
-				for k, value := range row {
-					sum += int(dialationImage1.GrayAt(x+k-1, y+j-1).Y) * value
-				}
-			}
-
-			if sum >= 255 {
-				dialationImage2.Set(x, y, color.Gray{255})
-			} else {
-				dialationImage2.Set(x, y, dialationImage1.GrayAt(x, y))
-			}
-		}
-	}
-
+	dialationImage1 := dialation(binImage)
 	// dialationFile1, err := os.Create("./answer_47_1.jpg")
 	// defer dialationFile1.Close()
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
 	// jpeg.Encode(dialationFile1, dialationImage1, &jpeg.Options{100})
+
+	// モルフォロジー処理(膨張) 2回目
+	dialationImage2 := dialation(dialationImage1)
 
 	dialationFile2, err := os.Create("./answer_47.jpg")
 	defer dialationFile2.Close()

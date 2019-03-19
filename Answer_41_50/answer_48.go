@@ -92,6 +92,37 @@ func discriminantAnalysisMethod(grayImage *image.Gray) *image.Gray {
 	return binImage
 }
 
+// モルフォロジー処理(縮小)
+func erosion(binImage *image.Gray) *image.Gray {
+	erosionImage := image.NewGray(binImage.Bounds())
+	filter := [3][3]int{
+		{0, 1, 0},
+		{1, 0, 1},
+		{0, 1, 0}}
+	for y := 1; y < binImage.Bounds().Size().Y-1; y++ {
+		for x := 1; x < binImage.Bounds().Size().X-1; x++ {
+			targetPix := binImage.GrayAt(x, y).Y
+			if targetPix == 255 {
+				sum := 0
+				for j, row := range filter {
+					for k, value := range row {
+						sum += int(binImage.GrayAt(x+k-1, y+j-1).Y) * value
+					}
+				}
+				if sum < 255*4 {
+					erosionImage.Set(x, y, color.Gray{0})
+				} else {
+					erosionImage.Set(x, y, binImage.GrayAt(x, y))
+				}
+			} else {
+				erosionImage.Set(x, y, binImage.GrayAt(x, y))
+			}
+			// fmt.Printf("[%d][%d] %d ", x, y, binImage.GrayAt(x, y).Y)
+		}
+	}
+	return erosionImage
+}
+
 func main() {
 	file, err := os.Open("./../assets/imori.jpg")
 	defer file.Close()
@@ -110,32 +141,7 @@ func main() {
 	binImage := discriminantAnalysisMethod(grayImage)
 
 	// モルフォロジー処理(縮小) 1回目
-	erosionImage1 := image.NewGray(binImage.Bounds())
-	filter := [3][3]int{
-		{0, 1, 0},
-		{1, 0, 1},
-		{0, 1, 0}}
-	for y := 1; y < binImage.Bounds().Size().Y-1; y++ {
-		for x := 1; x < binImage.Bounds().Size().X-1; x++ {
-			targetPix := binImage.GrayAt(x, y).Y
-			// fmt.Println(targetPix)
-			if targetPix == 255 {
-				sum := 0
-				for j, row := range filter {
-					for k, value := range row {
-						sum += int(binImage.GrayAt(x+k-1, y+j-1).Y) * value
-					}
-				}
-				if sum < 255*4 {
-					erosionImage1.Set(x, y, color.Gray{0})
-				} else {
-					erosionImage1.Set(x, y, binImage.GrayAt(x, y))
-				}
-			} else {
-				erosionImage1.Set(x, y, binImage.GrayAt(x, y))
-			}
-		}
-	}
+	erosionImage1 := erosion(binImage)
 	// erosionFile1, err := os.Create("./answer_48_1.jpg")
 	// defer erosionFile1.Close()
 	// if err != nil {
@@ -144,29 +150,7 @@ func main() {
 	// jpeg.Encode(erosionFile1, erosionImage1, &jpeg.Options{100})
 
 	// モルフォロジー処理(縮小) 2回目
-	erosionImage2 := image.NewGray(binImage.Bounds())
-	for y := 1; y < erosionImage1.Bounds().Size().Y-1; y++ {
-		for x := 1; x < erosionImage1.Bounds().Size().X-1; x++ {
-			targetPix := erosionImage1.GrayAt(x, y).Y
-			// fmt.Println(targetPix)
-			if targetPix == 255 {
-				sum := 0
-				for j, row := range filter {
-					for k, value := range row {
-						sum += int(erosionImage1.GrayAt(x+k-1, y+j-1).Y) * value
-					}
-				}
-				if sum < 255*4 {
-					erosionImage2.Set(x, y, color.Gray{0})
-				} else {
-					erosionImage2.Set(x, y, erosionImage1.GrayAt(x, y))
-				}
-			} else {
-				erosionImage2.Set(x, y, erosionImage1.GrayAt(x, y))
-			}
-		}
-	}
-
+	erosionImage2 := erosion(erosionImage1)
 	erosionFile2, err := os.Create("./answer_48.jpg")
 	defer erosionFile2.Close()
 	if err != nil {
