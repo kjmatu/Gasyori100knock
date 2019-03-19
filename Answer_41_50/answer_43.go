@@ -264,30 +264,49 @@ func main() {
 	}
 
 	HT := 100.0
-	LT := 30.0
+	LT := 45.0
 	threshEdgeImage := image.NewGray(jpegImage.Bounds())
-	for y := 1; y < len(nonMaximumSuppressionEdgeArray)-1; y++ {
-		for x := 1; x < len(nonMaximumSuppressionEdgeArray[0][:])-1; x++ {
+	H = len(nonMaximumSuppressionEdgeArray)
+	W = len(nonMaximumSuppressionEdgeArray[0][:])
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			// 画像の境界は255をセットする
+			if x == 0 || y == 0 || x >= W-1 || y >= H-1 {
+				threshEdgeImage.Set(x, y, color.Gray{255})
+				continue
+			}
+
 			edgeValue := nonMaximumSuppressionEdgeArray[y][x]
+
 			if edgeValue > HT {
 				threshEdgeImage.Set(x, y, color.Gray{255})
 			} else if edgeValue < LT {
 				threshEdgeImage.Set(x, y, color.Gray{0})
-			} else if edgeValue > LT && edgeValue < HT {
+			} else if edgeValue >= LT && edgeValue <= HT {
 				flag := false
 				for j := y - 1; j <= y+1; j++ {
 					for k := x - 1; k <= x+1; k++ {
-						// fmt.Printf("[%d][%d]", k, j)
-						if nonMaximumSuppressionEdgeArray[j][k] > edgeValue {
+						// if j == y-1 && k == x-1 {
+						// 	fmt.Println("center pix val", edgeValue)
+						// }
+						// fmt.Printf("[%d][%d] %f ", k, j, nonMaximumSuppressionEdgeArray[j][k])
+						neiborPix := nonMaximumSuppressionEdgeArray[j][k]
+						if neiborPix > edgeValue {
 							flag = true
+							// fmt.Printf("true")
+							break
 						}
 					}
+					// fmt.Println()
+					if flag == true {
+						break
+					}
 				}
+				// fmt.Println()
+
 				if flag == true {
 					threshEdgeImage.Set(x, y, color.Gray{255})
 				}
-			} else {
-				threshEdgeImage.Set(x, y, color.Gray{uint8(edgeValue)})
 			}
 		}
 	}
