@@ -45,12 +45,12 @@ func main() {
 		}
 	}
 
-	grayFile, err := os.Create("./answer_41_gray.jpg")
-	defer grayFile.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	jpeg.Encode(grayFile, grayImage, &jpeg.Options{100})
+	// grayFile, err := os.Create("./answer_41_gray.jpg")
+	// defer grayFile.Close()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// jpeg.Encode(grayFile, grayImage, &jpeg.Options{100})
 
 	// ガウシアンフィルタを定義式から計算
 	gH, gW := 5, 5
@@ -248,7 +248,7 @@ func main() {
 			} else if angle > 0.4142 && angle < 2.4142 {
 				angle = 45
 			} else if math.Abs(angle) >= 2.4142 {
-				angle = 95
+				angle = 90
 			} else if angle > -2.4142 && angle <= -0.4142 {
 				angle = 135
 			}
