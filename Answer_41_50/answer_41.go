@@ -89,7 +89,6 @@ func main() {
 				for gx := 0; gx < gW; gx++ {
 					refY := y + gy - gH/2
 					refX := x + gx - gW/2
-					// fmt.Printf("[%d][%d] ", refX, refY)
 					gaussianElm := gaussianMatrix[gy][gx]
 					if refX < 0 && refY < 0 || refX >= W && refY >= H || refX < 0 && refY >= H || refX >= W && refY < 0 {
 						filterValue += gaussianElm * grayArray[y][x]
@@ -100,86 +99,28 @@ func main() {
 					} else {
 						filterValue += gaussianElm * grayArray[refY][refX]
 					}
-					// fmt.Println(gaussianElm, filterValue)
 				}
-				// fmt.Println()
 			}
-			// fmt.Println()
 			grayGaussianArray[y][x] = filterValue
 			grayGaussianImage.Set(x, y, color.Gray{uint8(filterValue)})
 		}
 	}
 
-	// for _, row := range grayGaussianArray {
-	// 	fmt.Println(row)
+	// grayGaussianFile, err := os.Create("./answer_41_gray_gau.jpg")
+	// defer grayGaussianFile.Close()
+	// if err != nil {
+	// 	log.Fatal(err)
 	// }
-
-	grayGaussianFile, err := os.Create("./answer_41_gray_gau.jpg")
-	defer grayGaussianFile.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	jpeg.Encode(grayGaussianFile, grayGaussianImage, &jpeg.Options{100})
+	// jpeg.Encode(grayGaussianFile, grayGaussianImage, &jpeg.Options{100})
 
 	// 縦方向Sobelフィルタを作成
 	sobelFilterV := [3][3]float64{
-		{1, 0, -1},
-		{2, 0, -2},
-		{1, 0, -1}}
+		{-1, -2, -1},
+		{0, 0, 0},
+		{1, 2, 1}}
 
 	SH := len(sobelFilterV)
 	SW := len(sobelFilterV[0][:])
-	fxImage := image.NewGray(jpegImage.Bounds())
-	fxArray := make([][]float64, H)
-	for x := range fxArray {
-		fxArray[x] = make([]float64, W)
-	}
-
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
-			filterValue := 0.0
-			for sy := 0; sy < SW; sy++ {
-				for sx := 0; sx < SH; sx++ {
-					refY := y + sy - SH/2
-					refX := x + sx - SW/2
-					// fmt.Printf("[%d][%d] ", refX, refY)
-					gaussianElm := sobelFilterV[sy][sx]
-					if refX < 0 && refY < 0 || refX >= W && refY >= H || refX < 0 && refY >= H || refX >= W && refY < 0 {
-						filterValue += gaussianElm * grayArray[y][x]
-					} else if refY < 0 || refY >= H {
-						filterValue += gaussianElm * grayArray[y][refX]
-					} else if refX < 0 || refX >= W {
-						filterValue += gaussianElm * grayArray[refY][x]
-					} else {
-						filterValue += gaussianElm * grayArray[refY][refX]
-					}
-				}
-			}
-			if filterValue > 255.0 {
-				filterValue = 255.0
-			}
-			if filterValue < 0.0 {
-				filterValue = 0.0
-			}
-			fxArray[y][x] = filterValue
-			fxImage.Set(x, y, color.Gray{uint8(filterValue)})
-		}
-	}
-	grayGaussianFxFile, err := os.Create("./answer_41_gray_gau_fx.jpg")
-	defer grayGaussianFxFile.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	jpeg.Encode(grayGaussianFxFile, fxImage, &jpeg.Options{100})
-
-	// 横方向Sobelフィルタを作成
-	sobelFilterH := [3][3]float64{
-		{1, 2, 1},
-		{0, 0, 0},
-		{-1, -2, -1}}
-
-	SH = len(sobelFilterH)
-	SW = len(sobelFilterH[0][:])
 	fyImage := image.NewGray(jpegImage.Bounds())
 	fyArray := make([][]float64, H)
 	for x := range fyArray {
@@ -193,40 +134,94 @@ func main() {
 				for sx := 0; sx < SH; sx++ {
 					refY := y + sy - SH/2
 					refX := x + sx - SW/2
-					// fmt.Printf("[%d][%d] ", refX, refY)
-					gaussianElm := sobelFilterH[sy][sx]
+					gaussianElm := sobelFilterV[sy][sx]
 					if refX < 0 && refY < 0 || refX >= W && refY >= H || refX < 0 && refY >= H || refX >= W && refY < 0 {
-						filterValue += gaussianElm * grayArray[y][x]
+						filterValue += gaussianElm * grayGaussianArray[y][x]
 					} else if refY < 0 || refY >= H {
-						filterValue += gaussianElm * grayArray[y][refX]
+						filterValue += gaussianElm * grayGaussianArray[y][refX]
 					} else if refX < 0 || refX >= W {
-						filterValue += gaussianElm * grayArray[refY][x]
+						filterValue += gaussianElm * grayGaussianArray[refY][x]
 					} else {
-						filterValue += gaussianElm * grayArray[refY][refX]
+						filterValue += gaussianElm * grayGaussianArray[refY][refX]
 					}
 				}
 			}
+			fyArray[y][x] = filterValue
+
+			// 画像保存用
 			if filterValue > 255.0 {
 				filterValue = 255.0
 			}
 			if filterValue < 0.0 {
 				filterValue = 0.0
 			}
-			fxArray[y][x] = filterValue
 			fyImage.Set(x, y, color.Gray{uint8(filterValue)})
 		}
 	}
 
-	grayGaussianFyFile, err := os.Create("./answer_41_gray_gau_fy.jpg")
-	defer grayGaussianFyFile.Close()
-	if err != nil {
-		log.Fatal(err)
+	// grayGaussianFyFile, err := os.Create("./answer_41_gray_gau_fy.jpg")
+	// defer grayGaussianFyFile.Close()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// jpeg.Encode(grayGaussianFyFile, fyImage, &jpeg.Options{100})
+
+	// 横方向Sobelフィルタを作成
+	sobelFilterH := [3][3]float64{
+		{-1, 0, 1},
+		{-2, 0, 2},
+		{-1, 0, 1}}
+
+	SH = len(sobelFilterH)
+	SW = len(sobelFilterH[0][:])
+	fxImage := image.NewGray(jpegImage.Bounds())
+	fxArray := make([][]float64, H)
+	for x := range fxArray {
+		fxArray[x] = make([]float64, W)
 	}
-	jpeg.Encode(grayGaussianFyFile, fyImage, &jpeg.Options{100})
+
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			filterValue := 0.0
+			for sy := 0; sy < SW; sy++ {
+				for sx := 0; sx < SH; sx++ {
+					refY := y + sy - SH/2
+					refX := x + sx - SW/2
+					gaussianElm := sobelFilterH[sy][sx]
+					if refX < 0 && refY < 0 || refX >= W && refY >= H || refX < 0 && refY >= H || refX >= W && refY < 0 {
+						filterValue += gaussianElm * grayGaussianArray[y][x]
+					} else if refY < 0 || refY >= H {
+						filterValue += gaussianElm * grayGaussianArray[y][refX]
+					} else if refX < 0 || refX >= W {
+						filterValue += gaussianElm * grayGaussianArray[refY][x]
+					} else {
+						filterValue += gaussianElm * grayGaussianArray[refY][refX]
+					}
+				}
+			}
+			fxArray[y][x] = filterValue
+			// 画像保存用
+			if filterValue > 255.0 {
+				filterValue = 255.0
+			}
+			if filterValue < 0.0 {
+				filterValue = 0.0
+			}
+			fxImage.Set(x, y, color.Gray{uint8(filterValue)})
+		}
+	}
+
+	// grayGaussianFxFile, err := os.Create("./answer_41_gray_gau_fx.jpg")
+	// defer grayGaussianFxFile.Close()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// jpeg.Encode(grayGaussianFxFile, fxImage, &jpeg.Options{100})
 
 	edgeImage := image.NewGray(jpegImage.Bounds())
-	angleImage := image.NewGray(jpegImage.Bounds())
 	edgeArray := make([][]float64, H)
+
+	angleImage := image.NewGray(jpegImage.Bounds())
 	angleArray := make([][]float64, H)
 	for x := range grayGaussianArray {
 		edgeArray[x] = make([]float64, W)
@@ -242,13 +237,18 @@ func main() {
 			edgeArray[y][x] = edgeValue
 			edgeImage.Set(x, y, color.Gray{uint8(edgeValue)})
 
-			angle := fxArray[y][x] / fyArray[y][x]
+			fx := fxArray[y][x]
+			fy := fyArray[y][x]
+			if fx == 0.0 {
+				fx = 1e-5
+			}
+			angle := math.Atan(fy / fx)
 			if angle > -0.4142 && angle <= 0.4142 {
 				angle = 0
 			} else if angle > 0.4142 && angle < 2.4142 {
 				angle = 45
-			} else if angle <= -2.4142 || angle >= 2.4142 {
-				angle = 90
+			} else if math.Abs(angle) >= 2.4142 {
+				angle = 95
 			} else if angle > -2.4142 && angle <= -0.4142 {
 				angle = 135
 			}
