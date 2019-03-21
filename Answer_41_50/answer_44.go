@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -244,20 +243,20 @@ func thining(edgeArray, angleArray [][]float64) [][]float64 {
 	return thiningEdgeArray
 }
 
-func hysteresisThresholding(thiningEdgeArray [][]float64, high, low float64) [][]float64 {
+func hysteresisThresholding(thiningEdgeArray [][]float64, high, low float64) [][]int {
 	H := len(thiningEdgeArray)
 	W := len(thiningEdgeArray[0][:])
-	threshEdgeArray := make([][]float64, H)
+	threshEdgeArray := make([][]int, H)
 	for x := range threshEdgeArray {
-		threshEdgeArray[x] = make([]float64, W)
+		threshEdgeArray[x] = make([]int, W)
 	}
 	threshEdgeImage := image.NewGray(image.Rect(0, 0, W, H))
 	for y := 0; y < H; y++ {
 		for x := 0; x < W; x++ {
-			// 画像の境界は255をセットする
+			// 画像の境界は0をセットする
 			if x == 0 || y == 0 || x >= W-1 || y >= H-1 {
-				threshEdgeImage.Set(x, y, color.Gray{255})
-				threshEdgeArray[y][x] = 255
+				threshEdgeImage.Set(x, y, color.Gray{0})
+				threshEdgeArray[y][x] = 0
 				continue
 			}
 
@@ -291,12 +290,12 @@ func hysteresisThresholding(thiningEdgeArray [][]float64, high, low float64) [][
 			}
 		}
 	}
-	threshEdgeFile, err := os.Create("./answer_44.jpg")
-	defer threshEdgeFile.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	jpeg.Encode(threshEdgeFile, threshEdgeImage, &jpeg.Options{100})
+	// threshEdgeFile, err := os.Create("./answer_44_edge.jpg")
+	// defer threshEdgeFile.Close()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// jpeg.Encode(threshEdgeFile, threshEdgeImage, &jpeg.Options{100})
 
 	return threshEdgeArray
 }
@@ -340,32 +339,38 @@ func main() {
 	thiningEdgeArray := thining(edgeArray, angleArray)
 
 	HT := 100.0
-	LT := 45.0
+	LT := 30.0
 	cannyEdgeArray := hysteresisThresholding(thiningEdgeArray, HT, LT)
 
-	rmax := int(math.Hypot(float64(len(cannyEdgeArray)), float64(len(cannyEdgeArray[0][:]))))
-	table := make([][]int, rmax)
-	for x := range table {
-		table[x] = make([]int, 180)
-	}
+	H := len(cannyEdgeArray)
+	W := len(cannyEdgeArray[0][:])
+	rmax := int(math.Hypot(float64(W), float64(H)))
 
-	for y, row := range table {
-		for x := range row {
-			for t := 0; t < 180; t++ {
-				fmt.Println(x, y, t)
-				rad := math.Pi * float64(t) / 180
-				fmt.Println("Hough", float64(x)*math.Cos(rad)+float64(y)*math.Sin(rad))
-				r := int(float64(x)*math.Cos(rad) + float64(y)*math.Sin(rad))
-				fmt.Println("r", r, "t", t)
-				table[r][t]++
+	houghArray := make([][]int, rmax)
+	for y := range houghArray {
+		houghArray[y] = make([]int, 180)
+	}
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			edgeValue := cannyEdgeArray[y][x]
+			if edgeValue == 255 {
+				for t := 0; t < 180; t++ {
+					rad := math.Pi * float64(t) / 180
+					r := int(float64(x)*math.Cos(rad) + float64(y)*math.Sin(rad))
+					r = r % rmax
+					if r < 0 {
+						r += rmax
+					}
+					houghArray[r][t]++
+				}
 			}
 		}
 	}
 
 	houghImage := image.NewGray(image.Rect(0, 0, 180, rmax))
-	for y := 0; y < len(table); y++ {
-		for x := 0; x < len(table[0][:]); x++ {
-			houghColor := color.Gray{uint8(table[y][x])}
+	for y := 0; y < len(houghArray); y++ {
+		for x := 0; x < len(houghArray[0][:]); x++ {
+			houghColor := color.Gray{uint8(houghArray[y][x])}
 			houghImage.Set(x, y, houghColor)
 		}
 	}
