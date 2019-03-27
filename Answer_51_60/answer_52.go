@@ -139,8 +139,53 @@ func dialation(binImage *image.Gray) *image.Gray {
 	return dialationImage
 }
 
+// モルフォロジー処理(縮小)
+func erosion(binImage *image.Gray) *image.Gray {
+	erosionImage := image.NewGray(binImage.Bounds())
+	draw.Draw(erosionImage, binImage.Bounds(), binImage, binImage.Bounds().Min, draw.Src)
+
+	filter := [3][3]int{
+		{0, 1, 0},
+		{1, 0, 1},
+		{0, 1, 0}}
+	for y := 0; y < binImage.Bounds().Size().Y; y++ {
+		for x := 0; x < binImage.Bounds().Size().X; x++ {
+			targetPix := binImage.GrayAt(x, y).Y
+			if targetPix == 255 {
+				sum := 0
+				for j, row := range filter {
+					for k, value := range row {
+						refX := x + k - 1
+						refY := y + j - 1
+						if refX < 0 {
+							refX = 0
+						}
+
+						if refX >= binImage.Bounds().Size().X {
+							refX = binImage.Bounds().Size().X - 1
+						}
+
+						if refY < 0 {
+							refY = 0
+						}
+
+						if refY >= binImage.Bounds().Size().Y {
+							refY = binImage.Bounds().Size().Y - 1
+						}
+						sum += int(binImage.GrayAt(refX, refY).Y) * value
+					}
+				}
+				if sum < 255*4 {
+					erosionImage.Set(x, y, color.Gray{0})
+				}
+			}
+		}
+	}
+	return erosionImage
+}
+
 func main() {
-	file, err := os.Open("./../Question_41_50/imori.jpg")
+	file, err := os.Open("./../assets/imori.jpg")
 	defer file.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -156,23 +201,42 @@ func main() {
 	// 大津の2値化
 	binImage := discriminantAnalysisMethod(grayImage)
 
-	// モルフォロジー処理(膨張) 1回目
-	dialationImage1 := dialation(binImage)
-	// dialationFile1, err := os.Create("./answer_47_1.jpg")
-	// defer dialationFile1.Close()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// jpeg.Encode(dialationFile1, dialationImage1, &jpeg.Options{100})
+	// オープニング処理
+	openingImage := image.NewGray(binImage.Bounds())
+	// copy binImage -> openingImage
+	draw.Draw(openingImage, binImage.Bounds(), binImage, binImage.Bounds().Min, draw.Src)
+	for i := 0; i < 3; i++ {
+		// モルフォロジー処理(縮小)
+		openingImage = erosion(openingImage)
 
-	// モルフォロジー処理(膨張) 2回目
-	dialationImage2 := dialation(dialationImage1)
+	}
+	for i := 0; i < 3; i++ {
+		// モルフォロジー処理(膨張)
+		openingImage = dialation(openingImage)
+	}
 
-	dialationFile2, err := os.Create("./answer_47.jpg")
-	defer dialationFile2.Close()
+	// トップハット変換
+	// 差分画像
+	diffImage := image.NewGray(grayImage.Bounds())
+
+	for y := 0; y < binImage.Bounds().Size().Y; y++ {
+		for x := 0; x < binImage.Bounds().Size().X; x++ {
+			binVal := binImage.GrayAt(x, y).Y
+			openVal := openingImage.GrayAt(x, y).Y
+			diff := int(binVal) - int(openVal)
+			if diff < 0 {
+				diff = 0
+			}
+			// fmt.Println("diaVal", diaVal, "eroVal", eroVal, "diff", diff)
+			diffImage.Set(x, y, color.Gray{uint8(diff)})
+		}
+	}
+
+	diffFile, err := os.Create("./answer_52.jpg")
+	defer diffFile.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	jpeg.Encode(dialationFile2, dialationImage2, &jpeg.Options{100})
+	jpeg.Encode(diffFile, diffImage, &jpeg.Options{100})
 
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"image"
 	"image/color"
+	"image/draw"
 	"image/jpeg"
 	"log"
 	"math"
@@ -95,29 +96,43 @@ func discriminantAnalysisMethod(grayImage *image.Gray) *image.Gray {
 // モルフォロジー処理(縮小)
 func erosion(binImage *image.Gray) *image.Gray {
 	erosionImage := image.NewGray(binImage.Bounds())
+	draw.Draw(erosionImage, binImage.Bounds(), binImage, binImage.Bounds().Min, draw.Src)
+
 	filter := [3][3]int{
 		{0, 1, 0},
 		{1, 0, 1},
 		{0, 1, 0}}
-	for y := 1; y < binImage.Bounds().Size().Y-1; y++ {
-		for x := 1; x < binImage.Bounds().Size().X-1; x++ {
+	for y := 0; y < binImage.Bounds().Size().Y; y++ {
+		for x := 0; x < binImage.Bounds().Size().X; x++ {
 			targetPix := binImage.GrayAt(x, y).Y
 			if targetPix == 255 {
 				sum := 0
 				for j, row := range filter {
 					for k, value := range row {
-						sum += int(binImage.GrayAt(x+k-1, y+j-1).Y) * value
+						refX := x + k - 1
+						refY := y + j - 1
+						if refX < 0 {
+							refX = 0
+						}
+
+						if refX >= binImage.Bounds().Size().X {
+							refX = binImage.Bounds().Size().X - 1
+						}
+
+						if refY < 0 {
+							refY = 0
+						}
+
+						if refY >= binImage.Bounds().Size().Y {
+							refY = binImage.Bounds().Size().Y - 1
+						}
+						sum += int(binImage.GrayAt(refX, refY).Y) * value
 					}
 				}
 				if sum < 255*4 {
 					erosionImage.Set(x, y, color.Gray{0})
-				} else {
-					erosionImage.Set(x, y, binImage.GrayAt(x, y))
 				}
-			} else {
-				erosionImage.Set(x, y, binImage.GrayAt(x, y))
 			}
-			// fmt.Printf("[%d][%d] %d ", x, y, binImage.GrayAt(x, y).Y)
 		}
 	}
 	return erosionImage
