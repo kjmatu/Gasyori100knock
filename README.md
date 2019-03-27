@@ -1,8 +1,14 @@
 # 画像処理100本ノック!!
 
-English is here  >> https://github.com/KuKuXia/Image_Processing_100_Questions KuKuXia translates into English, so I appreciate his greate effort https://github.com/KuKuXia
+***English is here*** (KuKuXia translates into English)
 
-画像処理の初学者のための問題１００問が完成しましたぁぁぁぁぁ(´；ω；｀)
+> https://github.com/KuKuXia/Image_Processing_100_Questions
+
+***Chinese is here***  (gzr2017, my ex-colleague, translates into Chinese)
+
+> https://github.com/gzr2017/ImageProcessing100Wen
+
+画像処理の初学者のための問題１００問ですうう(´；ω；｀)
 
 これはイモリと一緒に画像処理の基本的処理の知識を身に着け、アルゴリズムを理解するための100本ノックです。ここに載っている問題はOpenCVでAPIが用意されているものが殆どですが、**あえてそれを自分の手で実装**してください。解答も載っけてますが、それはあくまで解答です。自分で考えながら実装して下さい。
 
@@ -10,12 +16,15 @@ English is here  >> https://github.com/KuKuXia/Image_Processing_100_Questions Ku
 - **内容はいろいろな文献を調べて載っけてるので正しくないものもあるかもしれないので注意して下さい** まちがいがあったらプルリクもらえるととても助かります！！
 - 【注意】このページを利用して、または関して生じた事に関しては、私は一切責任を負いません。すべて**自己責任**でお願い致します。
 
-PythonとC++の好きな方でやってみてね
+PythonとC++の好きな方でやってみてね♡
+
+## Related
 
 **ディープラーニングのノックはこっち** 
->> [ディープラーニング∞本ノック!!](https://github.com/yoyoyo-yo/DeepLearningMugenKnock)
+> [ディープラーニング∞本ノック!!](https://github.com/yoyoyo-yo/DeepLearningMugenKnock)
 
 ## Recent
+- 2019.3.25 Q.31 フーリエ系 Q.36 DCT,  Q.47,48 トップハット変換系を修正
 - 2019.3.13 Q95-100 Neural Networkを修正
 - 2019.3.8 Questions_01_10 にC++の解答を追加！
 - 2019.3.7 TutorialにC++用を追加　そろそろC++用の答えもつくろっかなーと
