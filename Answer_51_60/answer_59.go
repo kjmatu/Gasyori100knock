@@ -34,16 +34,26 @@ func main() {
 			}
 			upYindex := int(math.Max(float64(y-1), 0))
 			leftXindex := int(math.Max(float64(x-1), 0))
+
+			// 左、上、左上、右上のラベルを取得する
 			upLabel := labelImage.GrayAt(x, upYindex).Y
 			leftLabel := labelImage.GrayAt(leftXindex, y).Y
+			upperLeftLabel := labelImage.GrayAt(leftXindex, upYindex).Y
+			upperRightLabel := labelImage.GrayAt(x+1, upYindex).Y
 
-			if upLabel == 0 && leftLabel == 0 {
+			if upLabel == 0 && leftLabel == 0 && upperLeftLabel == 0 && upperRightLabel == 0 {
 				label++
 				labelImage.Set(x, y, color.Gray{uint8(label)})
 				lookUpTable[label] = label
 			} else {
-				minLabel := math.Min(float64(upLabel), float64(leftLabel))
-				maxLabel := math.Max(float64(upLabel), float64(leftLabel))
+				minLabel1 := math.Min(float64(upLabel), float64(leftLabel))
+				minLabel2 := math.Min(float64(upperLeftLabel), float64(upperRightLabel))
+				minLabel := math.Min(minLabel1, minLabel2)
+
+				maxLabel1 := math.Max(float64(upLabel), float64(leftLabel))
+				maxLabel2 := math.Max(float64(upperLeftLabel), float64(upperRightLabel))
+				maxLabel := math.Max(maxLabel1, maxLabel2)
+
 				if minLabel == 0 {
 					labelImage.Set(x, y, color.Gray{uint8(maxLabel)})
 				} else if int(minLabel) == int(maxLabel) {
@@ -103,7 +113,7 @@ func main() {
 			labeledImage.Set(x, y, color[colorIndex])
 		}
 	}
-	coloredFile, err := os.Create("./answer_58.png")
+	coloredFile, err := os.Create("./answer_59.png")
 	defer coloredFile.Close()
 	if err != nil {
 		log.Fatal(err)
