@@ -8,13 +8,16 @@ import (
 	"log"
 	"math"
 	"os"
-)
 
-type AngleMagnitudeHistgran struct {
-	CellX int
-	CellY int
-	hist  [9]float64
-}
+	"gonum.org/v1/plot"
+
+	"go-hep.org/x/hep/hbook"
+	"go-hep.org/x/hep/hplot"
+	"gonum.org/v1/plot/plotter"
+	"gonum.org/v1/plot/vg"
+	"gonum.org/v1/plot/vg/draw"
+	"gonum.org/v1/plot/vg/vgimg"
+)
 
 func main() {
 	srcFile, err := os.Open("./../Question_61_70/imori.jpg")
@@ -91,6 +94,7 @@ func main() {
 	}
 
 	// 勾配角度を 0~180度で9分割した値に量子化する
+	// fmt.Println("angle")
 	for y := 0; y < H; y++ {
 		for x := 0; x < W; x++ {
 			ang := angle[y][x]
@@ -113,7 +117,9 @@ func main() {
 			} else if ang >= 160 && ang <= 180 {
 				angle[y][x] = 8
 			}
+			// fmt.Printf("%d ", int(angle[y][x]))
 		}
+		// fmt.Println()
 	}
 
 	colorList := []color.RGBA{color.RGBA{0, 0, 255, 255},
@@ -134,47 +140,97 @@ func main() {
 			magnitude := mag[y][x]
 			gradColorImage.Set(x, y, colorList[int(gradient)])
 			magnitudeImage.Set(x, y, color.Gray{uint8(magnitude * 255 / magMax)})
+			// fmt.Printf("%f ", magnitude*255/magMax)
 		}
+		// fmt.Println()
 	}
 
 	// answer_67ここから
 	cellSize := 8
 
-	hist := make(map[int]map[int]map[int]float64)
-	for y := 0; y < H/cellSize; y++ {
-		hist[y] = make(map[int]map[int]float64)
-		for x := 0; x < W/cellSize; x++ {
-			hist[y][x] = make(map[int]float64)
-		}
-	}
-
-	// 8x8ピクセルのセルごとの勾配方向ヒストグラムを作成
-	for y := 0; y < H; y += cellSize {
-		for x := 0; x < W; x += cellSize {
-			for k := 0; k < cellSize; k++ {
-				for j := 0; j < cellSize; j++ {
-					// fmt.Println("refX", x+j, "refY", y+k)
-					// fmt.Println("x/cellSize", x/cellSize, "y/cellSize", y/cellSize)
-					hist[y/cellSize][x/cellSize][int(angle[y+k][x+j])] += mag[y+k][x+j]
-				}
+	cellHist := make(map[int]map[int]map[int]float64)
+	cellNumX := W / cellSize
+	cellNumY := H / cellSize
+	for y := 0; y < cellNumY; y++ {
+		cellHist[y] = make(map[int]map[int]float64)
+		for x := 0; x < cellNumX; x++ {
+			cellHist[y][x] = make(map[int]float64)
+			for i := 0; i < 9; i++ {
+				cellHist[y][x][i] = 0.0
 			}
 		}
 	}
-	fmt.Println(hist)
-	for k, v := range hist {
-		fmt.Println("k", k)
-		fmt.Println("v", v)
-		for vk, vv := range v {
-			fmt.Println("vk", vk)
-			fmt.Println("vv", vv)
+
+	// 8x8ピクセル(=セル16x16)の勾配方向ヒストグラムを作成
+	for cellIndexY := 0; cellIndexY < cellNumY; cellIndexY++ {
+		for cellIndexX := 0; cellIndexX < cellNumX; cellIndexX++ {
+			// fmt.Println("x", x, "y", y)
+			for y := 0; y < cellSize; y++ {
+				for x := 0; x < cellSize; x++ {
+					refY := cellIndexY*cellSize + y
+					refX := cellIndexX*cellSize + x
+					cellHist[cellIndexY][cellIndexX][int(angle[refY][refX])] += mag[refY][refX]
+				}
+			}
+			// fmt.Println(cellHist)
+		}
+	}
+	// fmt.Println(cellHist)
+
+	// 2D-Histgramの描画処理
+	row, col := 3, 3
+	plots := make([][]*plot.Plot, row)
+	for j := range plots {
+		plots[j] = make([]*plot.Plot, col)
+	}
+
+	i := 0
+	for j := 0; j < row; j++ {
+		for k := 0; k < col; k++ {
+			histPlot := hplot.New()
+			histPlot.Title.Text = fmt.Sprintf("HistIndex%d", i)
+			// histPlot.X.Label.Text = "Cell IndexX"
+			// histPlot.Y.Label.Text = "Cell IndexY"
+			hist2D := hbook.NewH2D(cellNumX, 0, float64(cellNumX), cellNumY, 0, float64(cellNumY))
+			for cellIndexY := 0; cellIndexY < cellNumY; cellIndexY++ {
+				for cellIndexX := 0; cellIndexX < cellNumX; cellIndexX++ {
+					histVal := cellHist[cellIndexY][cellIndexX][i]
+					hist2D.Fill(float64(cellIndexX), float64(cellIndexY), histVal)
+					histPlot.Add(hplot.NewH2D(hist2D, nil))
+					histPlot.Add(plotter.NewGrid())
+				}
+			}
+			plots[j][k] = histPlot.Plot
+			i++
 		}
 	}
 
-	magnitudeFile, err := os.Create("./answer_67.jpg")
-	defer magnitudeFile.Close()
-	if err != nil {
-		log.Fatal(err)
+	img := vgimg.New(10*vg.Centimeter, 10*vg.Centimeter)
+	dc := draw.New(img)
+	t := draw.Tiles{
+		Rows:      row,
+		Cols:      col,
+		PadX:      vg.Millimeter,
+		PadY:      vg.Millimeter,
+		PadTop:    vg.Points(2),
+		PadBottom: vg.Points(2),
+		PadLeft:   vg.Points(2),
+		PadRight:  vg.Points(2),
 	}
-	jpeg.Encode(magnitudeFile, magnitudeImage, &jpeg.Options{100})
+	canvases := plot.Align(plots, t, dc)
+	for j := 0; j < row; j++ {
+		for k := 0; k < col; k++ {
+			plots[j][k].Draw(canvases[j][k])
+		}
+	}
 
+	f, err := os.Create("answer_67.png")
+	if err != nil {
+		log.Fatalf("error: %v\n", err)
+	}
+
+	png := vgimg.PngCanvas{Canvas: img}
+	if _, err := png.WriteTo(f); err != nil {
+		panic(err)
+	}
 }
