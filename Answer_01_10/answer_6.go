@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func reduceColours(pixVal uint8) uint8 {
+func reduceColors(pixVal uint8) uint8 {
 	if (0 <= pixVal) && (pixVal < 63) {
 		return 32
 	} else if (63 <= pixVal) && (pixVal < 127) {
@@ -44,9 +44,9 @@ func main() {
 			a8 := uint8((float64(a32) / 0xFFFF) * 0xFF)
 
 			var subtractiveColor color.NRGBA
-			r8 = reduceColours(r8)
-			g8 = reduceColours(g8)
-			b8 = reduceColours(b8)
+			r8 = reduceColors(r8)
+			g8 = reduceColors(g8)
+			b8 = reduceColors(b8)
 			subtractiveColor.R = r8
 			subtractiveColor.G = g8
 			subtractiveColor.B = b8
