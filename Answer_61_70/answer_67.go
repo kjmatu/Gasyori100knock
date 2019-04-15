@@ -9,10 +9,9 @@ import (
 	"math"
 	"os"
 
-	"gonum.org/v1/plot"
-
 	"go-hep.org/x/hep/hbook"
 	"go-hep.org/x/hep/hplot"
+	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
 	"gonum.org/v1/plot/vg"
 	"gonum.org/v1/plot/vg/draw"
@@ -122,6 +121,10 @@ func main() {
 		// fmt.Println()
 	}
 
+	for _, row := range angle {
+		fmt.Println(row)
+	}
+
 	colorList := []color.RGBA{color.RGBA{0, 0, 255, 255},
 		color.RGBA{0, 255, 0, 255},
 		color.RGBA{255, 0, 0, 255},
@@ -146,36 +149,34 @@ func main() {
 	}
 
 	// answer_67ここから
-	cellSize := 8
-
-	cellHist := make(map[int]map[int]map[int]float64)
-	cellNumX := W / cellSize
-	cellNumY := H / cellSize
-	for y := 0; y < cellNumY; y++ {
-		cellHist[y] = make(map[int]map[int]float64)
-		for x := 0; x < cellNumX; x++ {
-			cellHist[y][x] = make(map[int]float64)
-			for i := 0; i < 9; i++ {
-				cellHist[y][x][i] = 0.0
-			}
+	N := 8
+	HH := H / N
+	HW := W / N
+	hist := make([][][]float64, HH)
+	for i := range hist {
+		hist[i] = make([][]float64, HW)
+		for j := range hist[i] {
+			hist[i][j] = make([]float64, 9)
 		}
 	}
+	fmt.Println(hist)
+	fmt.Println(len(hist), len(hist[0]), len(hist[0][0]))
 
-	// 8x8ピクセル(=セル16x16)の勾配方向ヒストグラムを作成
-	for cellIndexY := 0; cellIndexY < cellNumY; cellIndexY++ {
-		for cellIndexX := 0; cellIndexX < cellNumX; cellIndexX++ {
-			// fmt.Println("x", x, "y", y)
-			for y := 0; y < cellSize; y++ {
-				for x := 0; x < cellSize; x++ {
-					refY := cellIndexY*cellSize + y
-					refX := cellIndexX*cellSize + x
-					cellHist[cellIndexY][cellIndexX][int(angle[refY][refX])] += mag[refY][refX]
+	for y := 0; y < HH; y++ {
+		for x := 0; x < HW; x++ {
+			for j := 0; j < N; j++ {
+				for i := 0; i < N; i++ {
+					hist[y][x][int(angle[y*4+j][x*4+i])] += mag[y*4+j][x*4+i]
 				}
 			}
-			// fmt.Println(cellHist)
 		}
 	}
-	// fmt.Println(cellHist)
+
+	for _, row := range hist {
+		for _, rowrow := range row {
+			fmt.Println(rowrow)
+		}
+	}
 
 	// 2D-Histgramの描画処理
 	row, col := 3, 3
@@ -191,10 +192,10 @@ func main() {
 			histPlot.Title.Text = fmt.Sprintf("HistIndex%d", i)
 			// histPlot.X.Label.Text = "Cell IndexX"
 			// histPlot.Y.Label.Text = "Cell IndexY"
-			hist2D := hbook.NewH2D(cellNumX, 0, float64(cellNumX), cellNumY, 0, float64(cellNumY))
-			for cellIndexY := 0; cellIndexY < cellNumY; cellIndexY++ {
-				for cellIndexX := 0; cellIndexX < cellNumX; cellIndexX++ {
-					histVal := cellHist[cellIndexY][cellIndexX][i]
+			hist2D := hbook.NewH2D(HW, 0, float64(HW), HH, 0, float64(HH))
+			for cellIndexY := 0; cellIndexY < HH; cellIndexY++ {
+				for cellIndexX := 0; cellIndexX < HW; cellIndexX++ {
+					histVal := hist[cellIndexY][cellIndexX][i]
 					hist2D.Fill(float64(cellIndexX), float64(cellIndexY), histVal)
 					histPlot.Add(hplot.NewH2D(hist2D, nil))
 					histPlot.Add(plotter.NewGrid())
@@ -233,4 +234,5 @@ func main() {
 	if _, err := png.WriteTo(f); err != nil {
 		panic(err)
 	}
+
 }
