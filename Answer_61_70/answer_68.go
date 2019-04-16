@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image"
-	"image/color"
 	"image/jpeg"
 	"log"
 	"math"
@@ -114,27 +112,6 @@ func main() {
 			} else if ang >= 160 && ang <= 180 {
 				angle[y][x] = 8
 			}
-		}
-	}
-
-	colorList := []color.RGBA{color.RGBA{0, 0, 255, 255},
-		color.RGBA{0, 255, 0, 255},
-		color.RGBA{255, 0, 0, 255},
-		color.RGBA{0, 255, 255, 255},
-		color.RGBA{255, 0, 255, 255},
-		color.RGBA{255, 255, 0, 255},
-		color.RGBA{0, 127, 127, 255},
-		color.RGBA{127, 0, 127, 255},
-		color.RGBA{127, 127, 0, 255}}
-
-	gradColorImage := image.NewRGBA(srcImage.Bounds())
-	magnitudeImage := image.NewGray(srcImage.Bounds())
-	for y := 0; y < H; y++ {
-		for x := 0; x < W; x++ {
-			gradient := angle[y][x]
-			magnitude := mag[y][x]
-			gradColorImage.Set(x, y, colorList[int(gradient)])
-			magnitudeImage.Set(x, y, color.Gray{uint8(magnitude * 255 / magMax)})
 		}
 	}
 
