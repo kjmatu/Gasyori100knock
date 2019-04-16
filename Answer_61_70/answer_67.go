@@ -144,22 +144,27 @@ func main() {
 	}
 
 	// answer_67ここから
-	N := 8
-	HH := H / N
-	HW := W / N
-	hist := make([][][]float64, HH)
+	cellSize := 8
+	cellH := H / cellSize
+	cellW := W / cellSize
+	hist := make([][][]float64, cellH)
 	for i := range hist {
-		hist[i] = make([][]float64, HW)
+		hist[i] = make([][]float64, cellW)
 		for j := range hist[i] {
 			hist[i][j] = make([]float64, 9)
 		}
 	}
 
-	for y := 0; y < HH; y++ {
-		for x := 0; x < HW; x++ {
-			for j := 0; j < N; j++ {
-				for i := 0; i < N; i++ {
-					hist[y][x][int(angle[y*4+j][x*4+i])] += mag[y*4+j][x*4+i]
+	// cellX,Yは16x16の領域に分割されたCELLを指定するIndex
+	for cellY := 0; cellY < cellH; cellY++ {
+		for cellX := 0; cellX < cellW; cellX++ {
+			// j,iはCELL内の8x8ピクセルを指定するIndex
+			for j := 0; j < cellSize; j++ {
+				for i := 0; i < cellSize; i++ {
+					// CELL内のピクセルIndexが元画像のどのピクセルIndexに対応するか計算
+					refX := cellX*cellSize + i
+					refY := cellY*cellSize + j
+					hist[cellY][cellX][int(angle[refY][refX])] += mag[refY][refX]
 				}
 			}
 		}
@@ -179,9 +184,9 @@ func main() {
 			histPlot.Title.Text = fmt.Sprintf("HistIndex%d", i)
 			// histPlot.X.Label.Text = "Cell IndexX"
 			// histPlot.Y.Label.Text = "Cell IndexY"
-			hist2D := hbook.NewH2D(HW, 0, float64(HW), HH, 0, float64(HH))
-			for cellIndexY := 0; cellIndexY < HH; cellIndexY++ {
-				for cellIndexX := 0; cellIndexX < HW; cellIndexX++ {
+			hist2D := hbook.NewH2D(cellW, 0, float64(cellW), cellH, 0, float64(cellH))
+			for cellIndexY := 0; cellIndexY < cellH; cellIndexY++ {
+				for cellIndexX := 0; cellIndexX < cellW; cellIndexX++ {
 					histVal := hist[cellIndexY][cellIndexX][i]
 					hist2D.Fill(float64(cellIndexX), float64(cellIndexY), histVal)
 					histPlot.Add(hplot.NewH2D(hist2D, nil))
