@@ -88,7 +88,6 @@ func main() {
 			} else if math.IsNaN(angle[y][x]) {
 				angle[y][x] = 0
 			}
-
 		}
 	}
 
@@ -119,10 +118,6 @@ func main() {
 			// fmt.Printf("%d ", int(angle[y][x]))
 		}
 		// fmt.Println()
-	}
-
-	for _, row := range angle {
-		fmt.Println(row)
 	}
 
 	colorList := []color.RGBA{color.RGBA{0, 0, 255, 255},
@@ -159,8 +154,6 @@ func main() {
 			hist[i][j] = make([]float64, 9)
 		}
 	}
-	fmt.Println(hist)
-	fmt.Println(len(hist), len(hist[0]), len(hist[0][0]))
 
 	for y := 0; y < HH; y++ {
 		for x := 0; x < HW; x++ {
@@ -169,12 +162,6 @@ func main() {
 					hist[y][x][int(angle[y*4+j][x*4+i])] += mag[y*4+j][x*4+i]
 				}
 			}
-		}
-	}
-
-	for _, row := range hist {
-		for _, rowrow := range row {
-			fmt.Println(rowrow)
 		}
 	}
 
