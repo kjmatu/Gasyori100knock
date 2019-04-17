@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 	"image/jpeg"
 	"log"
+	"math"
 	"os"
 	"sort"
 )
@@ -21,52 +21,74 @@ func main() {
 		log.Fatal(err)
 	}
 
-	houghArray := make([][]int, jpegImage.Bounds().Size().Y)
-	nmsArray := make([][]int, jpegImage.Bounds().Size().Y)
+	H := jpegImage.Bounds().Size().Y
+	W := jpegImage.Bounds().Size().X
+	houghArray := make([][]int, H)
+	nmsArray := make([][]int, H)
 	for y := range houghArray {
-		houghArray[y] = make([]int, jpegImage.Bounds().Size().X)
-		nmsArray[y] = make([]int, jpegImage.Bounds().Size().X)
+		houghArray[y] = make([]int, W)
+		nmsArray[y] = make([]int, W)
 		for x := range houghArray[y] {
 			r, _, _, _ := jpegImage.At(x, y).RGBA()
 			houghArray[y][x] = int((r * 0xFF) / 0xFFFF)
 		}
 	}
 
-	// fmt.Println(len(houghArray)-1, len(houghArray[0][:])-1)
-	for y := 1; y < len(houghArray)-1; y++ {
-		for x := 1; x < len(houghArray[0][:])-1; x++ {
-			center := houghArray[y][x]
-			for neiborY := -1; neiborY <= 1; neiborY++ {
-				for neiborX := -1; neiborX <= 1; neiborX++ {
-					refY := y + neiborY
-					refX := x + neiborX
-					// fmt.Println(refX, refY)
-					neibor := houghArray[refY][refX]
-					if center > neibor {
-						nmsArray[y][x] = center
-					} else {
-						nmsArray[y][x] = 0
-					}
+	nmsFlattenArray := []int{}
+
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			leftIndex := int(math.Max(float64(x-1), 0))
+			rightIndex := int(math.Min(float64(x+1), float64(W-1)))
+			upIndex := int(math.Max(float64(y-1), 0))
+			downIndex := int(math.Min(float64(y+1), float64(H-1)))
+
+			// 注目している得票数
+			targetVotes := houghArray[y][x]
+			// 8近傍の得票数
+			v0 := houghArray[upIndex][leftIndex]
+			v1 := houghArray[upIndex][x]
+			v2 := houghArray[upIndex][rightIndex]
+			v3 := houghArray[y][leftIndex]
+			v4 := houghArray[y][rightIndex]
+			v5 := houghArray[downIndex][leftIndex]
+			v6 := houghArray[downIndex][x]
+			v7 := houghArray[downIndex][rightIndex]
+			neiborVotesArray := []int{v0, v1, v2, v3, v4, v5, v6, v7}
+
+			zeroFlag := false
+			for _, v := range neiborVotesArray {
+				if targetVotes < v {
+					zeroFlag = true
+					break
 				}
 			}
-		}
-	}
+			if zeroFlag {
+				nmsArray[y][x] = 0
+			} else {
+				nmsArray[y][x] = houghArray[y][x]
+			}
 
-	nmsFlatten := make([]int, jpegImage.Bounds().Size().Y*jpegImage.Bounds().Size().X)
-	for y, row := range nmsArray {
-		for x, value := range row {
-			nmsFlatten[y*len(nmsArray[0][:])+x] = value
 		}
+		nmsFlattenArray = append(nmsFlattenArray, nmsArray[y][:]...)
 	}
-	fmt.Println(nmsFlatten)
-	sort.Sort(sort.Reverse(sort.Ints(nmsFlatten)))
-	fmt.Println(nmsFlatten)
+	sort.Sort(sort.Reverse(sort.IntSlice(nmsFlattenArray)))
+	top10Array := nmsFlattenArray[:10]
 
 	nmsImage := image.NewGray(jpegImage.Bounds())
-	for y := 0; y < nmsImage.Bounds().Size().Y; y++ {
-		for x := 0; x < nmsImage.Bounds().Size().X; x++ {
-			nmsColor := color.Gray{uint8(nmsArray[y][x])}
-			nmsImage.Set(x, y, nmsColor)
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			houghVal := houghArray[y][x]
+			top10Flag := false
+			for _, top10 := range top10Array {
+				if houghVal == top10 {
+					top10Flag = true
+					break
+				}
+			}
+			if top10Flag {
+				nmsImage.SetGray(x, y, color.Gray{255})
+			}
 		}
 	}
 
@@ -76,5 +98,4 @@ func main() {
 		log.Fatal(err)
 	}
 	jpeg.Encode(nmsFile, nmsImage, &jpeg.Options{100})
-
 }
