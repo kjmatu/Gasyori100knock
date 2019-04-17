@@ -290,60 +290,35 @@ func hysteresisThresholding(thiningEdgeArray [][]float64, high, low float64) [][
 			}
 		}
 	}
-	// threshEdgeFile, err := os.Create("./answer_44_edge.jpg")
-	// defer threshEdgeFile.Close()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// jpeg.Encode(threshEdgeFile, threshEdgeImage, &jpeg.Options{100})
-
 	return threshEdgeArray
 }
 
 func main() {
-	file, err := os.Open("./../Question_41_50/thorino.jpg")
-	defer file.Close()
+	cannyEdgeFile, err := os.Open("./canny_edge_thorino.jpg")
+	// cannyEdgeFile, err := os.Open("./answer_44.jpg")
+	defer cannyEdgeFile.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
-	jpegImage, err := jpeg.Decode(file)
+	cannyEdgeImage, err := jpeg.Decode(cannyEdgeFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// グレイスケース変換
-	grayArray := color2Gray(jpegImage)
+	H := cannyEdgeImage.Bounds().Size().Y
+	W := cannyEdgeImage.Bounds().Size().X
+	cannyEdgeArray := make([][]float64, H)
+	for i := range cannyEdgeArray {
+		cannyEdgeArray[i] = make([]float64, W)
+	}
 
-	// ガウシアンフィルタを適用
-	gH, gW := 5, 5
-	sigma := 1.4
-	grayGaussianArray := gaussianFilter(grayArray, gH, gW, sigma)
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			r, _, _, _ := cannyEdgeImage.At(x, y).RGBA()
+			cannyEdgeArray[y][x] = float64(r) * 0xFF / 0xFFFF
+		}
+	}
 
-	// 縦方向Sobelフィルタを作成
-	sobelFilterV := [3][3]float64{
-		{-1, -2, -1},
-		{0, 0, 0},
-		{1, 2, 1}}
-
-	fyArray, _ := sobelFileter(grayGaussianArray, sobelFilterV)
-
-	// 横方向Sobelフィルタを作成
-	sobelFilterH := [3][3]float64{
-		{-1, 0, 1},
-		{-2, 0, 2},
-		{-1, 0, 1}}
-
-	fxArray, _ := sobelFileter(grayGaussianArray, sobelFilterH)
-
-	edgeArray, angleArray, _, _ := calcGradientIntensityAndAngle(fxArray, fyArray)
-	thiningEdgeArray := thining(edgeArray, angleArray)
-
-	HT := 100.0
-	LT := 30.0
-	cannyEdgeArray := hysteresisThresholding(thiningEdgeArray, HT, LT)
-
-	H := len(cannyEdgeArray)
-	W := len(cannyEdgeArray[0][:])
 	rmax := int(math.Hypot(float64(W), float64(H)))
 
 	houghArray := make([][]int, rmax)
