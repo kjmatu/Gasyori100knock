@@ -10,20 +10,6 @@ import (
 	"sort"
 )
 
-type any []interface{}
-
-func flatten(in, result any) any {
-	for _, x := range in {
-		s, ok := x.(int)
-		if ok {
-			result = append(result, s)
-		} else {
-			result = flatten(x.(any), result)
-		}
-	}
-	return result
-}
-
 func main() {
 	file, err := os.Open("./../Question_41_50/answers/answer_44.jpg")
 	defer file.Close()
