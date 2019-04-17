@@ -14,6 +14,72 @@ func gaussian(x, y int, sigma float64) float64 {
 	return g
 }
 
+func createGaussianMatrix(width, height int, σ float64) [][]float64 {
+	// ガウシアンフィルタを定義式から計算
+	sum := 0.0
+	gaussianMatrix := make([][]float64, height)
+	for i := range gaussianMatrix {
+		gaussianMatrix[i] = make([]float64, width)
+	}
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			// 行列の中央を原点とした座標系に変換する
+			gx := x - width/2
+			gy := y - height/2
+			g := gaussian(gx, gy, σ)
+			sum += g
+			gaussianMatrix[y][x] = g
+		}
+	}
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			gaussianMatrix[y][x] /= sum
+		}
+	}
+	return gaussianMatrix
+}
+
+func applyGaussianFilter(grayArray, gaussianMatrix [][]float64) [][]float64 {
+	height := len(grayArray)
+	width := len(grayArray[0])
+	filteredArray := make([][]float64, height)
+	for i := range filteredArray {
+		filteredArray[i] = make([]float64, width)
+	}
+
+	gHeight := len(gaussianMatrix)
+	gWidth := len(gaussianMatrix[0])
+
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			filteredValue := 0.0
+			for gY := 0; gY < gHeight; gY++ {
+				for gX := 0; gX < gWidth; gX++ {
+					refX := gX + x
+					refY := gY + y
+					if refX < 0 {
+						refX = 0
+					}
+					if refY < 0 {
+						refY = 0
+					}
+					if refX >= width {
+						refX = width - 1
+					}
+					if refY >= height {
+						refY = height - 1
+					}
+					filteredValue += gaussianMatrix[gY][gX] * grayArray[refY][refX]
+				}
+			}
+			filteredArray[y][x] = filteredValue
+		}
+	}
+	return filteredArray
+}
+
 func main() {
 	file, err := os.Open("./../assets/imori.jpg")
 	defer file.Close()
@@ -55,57 +121,11 @@ func main() {
 	// ガウシアンフィルタを定義式から計算
 	gH, gW := 5, 5
 	sigma := 1.4
-	gaussianMatrix := make([][]float64, gH)
-	for x := range gaussianMatrix {
-		gaussianMatrix[x] = make([]float64, gW)
-	}
+	gaussianMatrix := createGaussianMatrix(gH, gW, sigma)
 
-	sum := 0.0
-	for y, row := range gaussianMatrix {
-		for x := range row {
-			gy := y - gH/2
-			gx := x - gW/2
-			gaussianMatrix[y][x] = gaussian(gx, gy, sigma)
-			sum += gaussianMatrix[y][x]
-		}
-	}
+	grayGaussianArray := applyGaussianFilter(grayArray, gaussianMatrix)
 
-	for y, row := range gaussianMatrix {
-		for x := range row {
-			gaussianMatrix[y][x] /= sum
-		}
-	}
-
-	grayGaussianImage := image.NewGray(jpegImage.Bounds())
-	grayGaussianArray := make([][]float64, H)
-	for x := range grayGaussianArray {
-		grayGaussianArray[x] = make([]float64, W)
-	}
-
-	for y := 0; y < H; y++ {
-		for x := 0; x < H; x++ {
-			filterValue := 0.0
-			for gy := 0; gy < gH; gy++ {
-				for gx := 0; gx < gW; gx++ {
-					refY := y + gy - gH/2
-					refX := x + gx - gW/2
-					gaussianElm := gaussianMatrix[gy][gx]
-					if refX < 0 && refY < 0 || refX >= W && refY >= H || refX < 0 && refY >= H || refX >= W && refY < 0 {
-						filterValue += gaussianElm * grayArray[y][x]
-					} else if refY < 0 || refY >= H {
-						filterValue += gaussianElm * grayArray[y][refX]
-					} else if refX < 0 || refX >= W {
-						filterValue += gaussianElm * grayArray[refY][x]
-					} else {
-						filterValue += gaussianElm * grayArray[refY][refX]
-					}
-				}
-			}
-			grayGaussianArray[y][x] = filterValue
-			grayGaussianImage.Set(x, y, color.Gray{uint8(filterValue)})
-		}
-	}
-
+	// grayGaussianImage := image.NewGray(jpegImage.Bounds())
 	// grayGaussianFile, err := os.Create("./answer_41_gray_gau.jpg")
 	// defer grayGaussianFile.Close()
 	// if err != nil {
