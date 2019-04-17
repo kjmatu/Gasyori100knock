@@ -175,7 +175,7 @@ func calcGradientIntensityAndAngle(fxArray, fyArray [][]float64) (edgeArray, ang
 				angle = 0
 			} else if angle > 0.4142 && angle < 2.4142 {
 				angle = 45
-			} else if math.Abs(angle) >= 2.4142 {
+			} else if angle >= 2.4142 || angle <= -2.4142 {
 				angle = 90
 			} else if angle > -2.4142 && angle <= -0.4142 {
 				angle = 135
@@ -222,52 +222,53 @@ func main() {
 
 	fxArray, _ := sobelFileter(grayGaussianArray, sobelFilterH)
 
+	// Non-maximum suppression
 	edgeArray, angleArray, _, _ := calcGradientIntensityAndAngle(fxArray, fyArray)
 
-	nonMaximumSuppressionEdgeArray := make([][]float64, len(edgeArray))
-	for x := range nonMaximumSuppressionEdgeArray {
-		nonMaximumSuppressionEdgeArray[x] = make([]float64, len(edgeArray[0][:]))
+	nmsEdgeArray := make([][]float64, len(edgeArray))
+	for x := range nmsEdgeArray {
+		nmsEdgeArray[x] = make([]float64, len(edgeArray[0][:]))
 	}
-	copy(nonMaximumSuppressionEdgeArray, edgeArray)
-	nonMaximumSuppressionEdgeImage := image.NewGray(jpegImage.Bounds())
-	W := nonMaximumSuppressionEdgeImage.Bounds().Size().X
-	H := nonMaximumSuppressionEdgeImage.Bounds().Size().Y
+	copy(nmsEdgeArray, edgeArray)
+	nmsEdgeImage := image.NewGray(jpegImage.Bounds())
+	W := nmsEdgeImage.Bounds().Size().X
+	H := nmsEdgeImage.Bounds().Size().Y
 
 	for y := 1; y < H-1; y++ {
 		for x := 1; x < W-1; x++ {
 			angle := angleArray[y][x]
 			edge := edgeArray[y][x]
-			nonMaximumSuppressionEdgeImage.Set(x, y, color.Gray{uint8(edge)})
+			nmsEdgeImage.Set(x, y, color.Gray{uint8(edge)})
 
 			if angle == 0 {
 				if edge < edgeArray[y][x-1] || edge < edgeArray[y][x+1] {
-					nonMaximumSuppressionEdgeArray[y][x] = 0
-					nonMaximumSuppressionEdgeImage.Set(x, y, color.Gray{0})
+					nmsEdgeArray[y][x] = 0
+					nmsEdgeImage.Set(x, y, color.Gray{0})
 				}
 			} else if angle == 45 {
 				if edge < edgeArray[y+1][x-1] || edge < edgeArray[y-1][x+1] {
-					nonMaximumSuppressionEdgeArray[y][x] = 0
-					nonMaximumSuppressionEdgeImage.Set(x, y, color.Gray{0})
+					nmsEdgeArray[y][x] = 0
+					nmsEdgeImage.Set(x, y, color.Gray{0})
 				}
 			} else if angle == 90 {
 				if edge < edgeArray[y-1][x] || edge < edgeArray[y+1][x] {
-					nonMaximumSuppressionEdgeArray[y][x] = 0
-					nonMaximumSuppressionEdgeImage.Set(x, y, color.Gray{0})
+					nmsEdgeArray[y][x] = 0
+					nmsEdgeImage.Set(x, y, color.Gray{0})
 				}
 			} else if angle == 135 {
 				if edge < edgeArray[y-1][x-1] || edge < edgeArray[y+1][x+1] {
-					nonMaximumSuppressionEdgeArray[y][x] = 0
-					nonMaximumSuppressionEdgeImage.Set(x, y, color.Gray{0})
+					nmsEdgeArray[y][x] = 0
+					nmsEdgeImage.Set(x, y, color.Gray{0})
 				}
 			}
 		}
 	}
 
-	HT := 100.0
-	LT := 45.0
+	HT := 180.0
+	LT := 60.0
 	threshEdgeImage := image.NewGray(jpegImage.Bounds())
-	H = len(nonMaximumSuppressionEdgeArray)
-	W = len(nonMaximumSuppressionEdgeArray[0][:])
+	H = len(nmsEdgeArray)
+	W = len(nmsEdgeArray[0][:])
 	for y := 0; y < H; y++ {
 		for x := 0; x < W; x++ {
 			// 画像の境界は255をセットする
@@ -276,7 +277,7 @@ func main() {
 				continue
 			}
 
-			edgeValue := nonMaximumSuppressionEdgeArray[y][x]
+			edgeValue := nmsEdgeArray[y][x]
 
 			if edgeValue > HT {
 				threshEdgeImage.Set(x, y, color.Gray{255})
@@ -286,23 +287,16 @@ func main() {
 				flag := false
 				for j := y - 1; j <= y+1; j++ {
 					for k := x - 1; k <= x+1; k++ {
-						// if j == y-1 && k == x-1 {
-						// 	fmt.Println("center pix val", edgeValue)
-						// }
-						// fmt.Printf("[%d][%d] %f ", k, j, nonMaximumSuppressionEdgeArray[j][k])
-						neiborPix := nonMaximumSuppressionEdgeArray[j][k]
+						neiborPix := nmsEdgeArray[j][k]
 						if neiborPix > edgeValue {
 							flag = true
-							// fmt.Printf("true")
 							break
 						}
 					}
-					// fmt.Println()
 					if flag == true {
 						break
 					}
 				}
-				// fmt.Println()
 
 				if flag == true {
 					threshEdgeImage.Set(x, y, color.Gray{255})
